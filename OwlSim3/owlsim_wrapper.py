@@ -1,53 +1,53 @@
 import requests
-from pprint import pprint
+import datetime
 
+class PhenotypeSimilaritySearch(object):
 
-class SimSearch(object):
+    def __init__(self, endpoint='http://owlsim3.monarchinitiative.org/api'):
+        """
+        Initialize SimSearch
+        """
+        self.endpoint = endpoint
+        self.results = None
 
-    def __init__(self):
-        self.sim_endpoint = 'http://owlsim3.monarchinitiative.org/api/'
-        self.staged_results = ''
-
-    def phenotype_search(self, phenotype_set, matcher='phenodigm'):
-        phenotype_set = SimSearch.filter_bl_phenotypes(phenotype_set)
-        match = 'match/{}'.format(matcher)
-        url = '{0}{1}'.format(self.sim_endpoint, match)
+    def search(self, phenotype_set, matcher='phenodigm'):
+        """
+        Given a phenotype set and a matcher, perform a phenotype search
+        """
+        phenotype_set = self.filter_blacklist_terms(phenotype_set)
+        url = "{}/match/{}".format(self.endpoint, matcher)
         params = {
             'id': phenotype_set
         }
-        results = requests.get(url=url, params=params)
-        package = results.json()
-        self.staged_results = package
+        response = requests.get(url=url, params=params)
+        self.results = response.json()
 
-    def disease_results(self):
-        diseases = []
+    def get_results(self, type=None):
+        """
+        Subset the results to a particular type of matches
+        """
+        data = []
         curies = []
-        for match in self.staged_results['matches']:
-            if 'NCBIGene' not in match['matchId']:
-                diseases.append(match)
-                curies.append(match['matchId'])
 
-        return {'data': diseases,
-                'disease_curies': curies,
-                }
+        for match in self.results['matches']:
+            if type == 'gene':
+                if 'NCBIGene' in match['matchId']:
+                    data.append(match)
+                    curies.append(match['matchId'])
+            elif type == 'disease':
+                if 'NCBIGene' not in match['matchId']:
+                    data.append(match)
+                    curies.append(match['matchId'])
 
-    def gene_results(self):
-        genes = []
-        curies = []
-        for match in self.staged_results['matches']:
-            if 'NCBIGene' in match['matchId']:
-                genes.append(match)
-                curies.append(match['matchId'])
-
-        return {'data': genes,
-                'disease_curies': curies,
-                }
+        return {
+            'data': data,
+            'curies': curies
+        }
 
     @staticmethod
-    def filter_bl_phenotypes(phenotype_list):
-        phenotype_blacklist = ['HP:0025023']
-        for elem in phenotype_blacklist:
-            phenotype_list.remove(elem)
-        return phenotype_list
-
-
+    def filter_blacklist_terms(list, blacklist=['HP:0025023']):
+        """
+        Filter blacklist terms from list
+        """
+        filtered_list = [x for x in list if x not in blacklist]
+        return filtered_list
