@@ -4,10 +4,17 @@ from ontobio.io.gafparser import GafParser
 from ontobio.assoc_factory import AssociationSetFactory
 from .generic_similarity import GenericSimilarity
 
-HUMAN = 'http://geneontology.org/gene-associations/goa_human.gaf.gz'
+URI = 'http://geneontology.org/gene-associations/goa_{group}.gaf.gz'
+DEFAULT_GROUP = 'human'
 
 class FunctionalSimilarity(GenericSimilarity):
-    def __init__(self, ont='go', subject_category='gene', object_category='function', file=HUMAN):
+    def __init__(self, ont='go', subject_category='gene', object_category='function', file=None, group=None):
+        if group != None:
+            file = URI.format(group=group)
+
+        if file == None:
+            file = URI.format(group=DEFAULT_GROUP)
+
         super(FunctionalSimilarity, self).__init__(
             ont=ont,
             subject_category=subject_category,
