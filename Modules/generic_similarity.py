@@ -2,8 +2,6 @@ from ontobio.ontol_factory import OntologyFactory
 from ontobio.assoc_factory import AssociationSetFactory
 from ontobio.assocmodel import AssociationSet
 
-# HUMAN = 'NCBITaxon:9606'
-
 class GenericSimilarity(object):
     """
     Note: We should make afactory.create able to load from url's if the file has a web protocol in it
@@ -27,21 +25,19 @@ class GenericSimilarity(object):
             fmt=fmt
         )
 
-    def compute_similarity(self, input_curies):
-        simularities = []
-
-        import pudb; pu.db
+    def compute_jaccard(self, input_curies):
+        similarities = []
 
         for input_curie in input_curies:
-            for entity_curie in self.associations.subject_label_map.keys():
-                score = self.associations.jaccard_similarity(input_curie, entity_curie)
+            for subject_curie in self.associations.subject_label_map.keys():
+                score = self.associations.jaccard_similarity(input_curie, subject_curie)
 
                 if score > .7 and score < 1:
-                    simularities.append({
+                    similarities.append({
                         'input_curie': input_curie,
-                        'sim_hit_name': self.associations.label(entity_curie),
-                        'sim_hit_curie': entity_curie,
+                        'sim_hit_name': self.associations.label(subject_curie),
+                        'sim_hit_curie': subject_curie,
                         'sim_score': score,
                     })
 
-        return simularities
+        return similarities
