@@ -8,7 +8,7 @@ URI = 'http://geneontology.org/gene-associations/goa_{group}.gaf.gz'
 DEFAULT_GROUP = 'human'
 
 class FunctionalSimilarity(GenericSimilarity):
-    def __init__(self, ont='go', subject_category='gene', object_category='function', file=None, group=None):
+    def __init__(self, ont='go', subject_category='gene', object_category='function', file=None, fmt='gaf', group=None):
         if group != None:
             file = URI.format(group=group)
 
@@ -19,21 +19,19 @@ class FunctionalSimilarity(GenericSimilarity):
             ont=ont,
             subject_category=subject_category,
             object_category=object_category,
-            file=file
+            file=file,
+            fmt=fmt
         )
 
         self.symbol_map = {}
         self.identifier_map = {}
 
     def load_gene_set(self, gene_set):
-        self.gene_set = []
 
         for gene in gene_set:
-            mg = QueryMyGene(curie=gene)
-            mg.query_mygene()
-            gene_dat = mg.package
-            ukb = mg.parse_uniprot()
-
+            mg = QueryMyGene()
+            gene_dat = mg.query_mygene(curie=gene)
+            ukb = QueryMyGene.parse_uniprot(gene_dat)
             uniprotkb = 'UniProtKB:{}'.format("".join(ukb))
 
             self.symbol_map[uniprotkb] = gene_dat['symbol']
