@@ -38,7 +38,7 @@ class FunctionalSimilarity(GenericSimilarity):
             self.symbol_map[uniprotkb] = gene_dat['symbol']
             self.identifier_map[uniprotkb] = gene
 
-    def compute_similarity(self):
+    def compute_similarity(self, lower_bound:float=0.7, upper_bound:float=1.0) -> List[dict]:
         uniprotkb_gene_set = self.identifier_map.keys()
         results = self.compute_jaccard(uniprotkb_gene_set)
 
