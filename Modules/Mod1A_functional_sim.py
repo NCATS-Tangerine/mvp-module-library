@@ -26,15 +26,18 @@ class FunctionalSimilarity(GenericSimilarity):
 
     def load_gene_set(self, gene_set:List[str], taxon:str=None):
         for gene in gene_set:
-            mg = QueryMyGene(curie=gene, taxon=taxon)
-            mg.query_mygene()
-            gene_dat = mg.package
-            ukb = mg.parse_uniprot()
+            mg = QueryMyGene()
+            gene_dat = mg.query_mygene(curie=gene, taxon=taxon)
+            ukb = QueryMyGene.parse_uniprot(gene_dat)
 
             uniprotkb = 'UniProtKB:{}'.format("".join(ukb))
 
             self.symbol_map[uniprotkb] = gene_dat['symbol']
             self.identifier_map[uniprotkb] = gene
+
+    @property
+    def gene_set(self):
+        return list(self.identifier_map.keys())
 
     def compute_similarity(self, lower_bound:float=0.7, upper_bound:float=1.0) -> List[dict]:
         uniprotkb_gene_set = self.identifier_map.keys()
