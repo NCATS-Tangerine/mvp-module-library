@@ -2,34 +2,33 @@ from MyGene.mygene_client import QueryMyGene
 from ontobio.ontol_factory import OntologyFactory
 from ontobio.io.gafparser import GafParser
 from ontobio.assoc_factory import AssociationSetFactory
+from ontobio.assocmodel import AssociationSet
 from .generic_similarity import GenericSimilarity
 
-URI = 'http://geneontology.org/gene-associations/goa_{group}.gaf.gz'
-DEFAULT_GROUP = 'human'
+from typing import List, Union, TextIO
 
 class FunctionalSimilarity(GenericSimilarity):
-    def __init__(self, ont='go', subject_category='gene', object_category='function', file=None, group=None):
-        if group != None:
-            file = URI.format(group=group)
-
-        if file == None:
-            file = URI.format(group=DEFAULT_GROUP)
-
-        super(FunctionalSimilarity, self).__init__(
-            ont=ont,
-            subject_category=subject_category,
-            object_category=object_category,
-            file=file
-        )
+    def __init__(self, associations:AssociationSet=None):
+        GenericSimilarity.__init__(self, associations=associations)
 
         self.symbol_map = {}
         self.identifier_map = {}
 
-    def load_gene_set(self, gene_set):
+    def load_associations(self, ontology_name:str='go', subject_category:str='gene', object_category:str='function', file:Union[str, TextIO]=None, fmt:str=None):
+        GenericSimilarity.load_associations(
+            self,
+            ontology_name=ontology_name,
+            subject_category=subject_category,
+            object_category=object_category,
+            file=file,
+            fmt=fmt
+        )
+
+    def load_gene_set(self, gene_set:List[str], taxon:str=None):
         self.gene_set = []
 
         for gene in gene_set:
-            mg = QueryMyGene(curie=gene)
+            mg = QueryMyGene(curie=gene, taxon=taxon)
             mg.query_mygene()
             gene_dat = mg.package
             ukb = mg.parse_uniprot()
