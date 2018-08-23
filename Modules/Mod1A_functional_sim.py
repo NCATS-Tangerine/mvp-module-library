@@ -25,8 +25,6 @@ class FunctionalSimilarity(GenericSimilarity):
         )
 
     def load_gene_set(self, gene_set:List[str], taxon:str=None):
-        self.gene_set = []
-
         for gene in gene_set:
             mg = QueryMyGene(curie=gene, taxon=taxon)
             mg.query_mygene()
