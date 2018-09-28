@@ -20,7 +20,8 @@ class GenericSimilarity(object):
         p = GafParser()
         afactory = AssociationSetFactory()
         if ont == 'go':
-            url = "http://geneontology.org/gene-associations/gene_association.{}.gz".format(group)
+            if group == 'mouse':
+                url = "http://geneontology.org/gene-associations/gene_association.mgi.gz"
             if group == 'human':
                 url = "http://geneontology.org/gene-associations/goa_human.gaf.gz"
             assocs = p.parse(url)
@@ -39,7 +40,6 @@ class GenericSimilarity(object):
             for subject_curie in self.associations.subject_label_map.keys():
                 if igene['sim_input_curie'] is not subject_curie:
                     score = jaccard_similarity(self.associations, igene['sim_input_curie'], subject_curie)
-
                     if float(score) > float(lower_bound):
                         subject_label = self.associations.label(subject_curie)
                         similarities.append({
