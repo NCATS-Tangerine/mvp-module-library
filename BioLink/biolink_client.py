@@ -13,8 +13,8 @@ class BioLinkWrapper(object):
         response = requests.get(url)
         return response.json()
 
-    def disease2genes(self, disease_curie, limit):
-        params = {'rows': limit}
+    def disease2genes(self, disease_curie):
+        params = {}
         params.update(self.params)
         url = '{0}bioentity/disease/{1}/genes'.format(self.endpoint, disease_curie)
         response = requests.get(url, params)
