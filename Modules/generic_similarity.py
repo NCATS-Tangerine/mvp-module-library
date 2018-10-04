@@ -19,6 +19,7 @@ class GenericSimilarity(object):
         ont_fac = self.ofactory.create(ont)
         p = GafParser()
         afactory = AssociationSetFactory()
+        url = ''
         if ont == 'go':
             if group == 'mouse':
                 url = "http://geneontology.org/gene-associations/gene_association.mgi.gz"
@@ -44,8 +45,15 @@ class GenericSimilarity(object):
                         subject_label = self.associations.label(subject_curie)
                         similarities.append({
                             'input_curie': igene['sim_input_curie'],
-                            'sim_hit_name': subject_label,
-                            'sim_hit_curie': subject_curie,
-                            'sim_score': score,
+                            'hit_name': GenericSimilarity.trim_mgi_prefix(subject_label),
+                            'hit_curie': subject_curie,
+                            'hit_score': score,
                         })
         return similarities
+
+    @staticmethod
+    def trim_mgi_prefix(curie):
+        if 'MGI:MGI:' in curie:
+            return curie[4:]
+        else:
+            return curie

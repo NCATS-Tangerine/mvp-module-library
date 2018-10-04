@@ -46,7 +46,7 @@ class FunctionalSimilarity(GenericSimilarity):
                           skim: bool = False) -> None:
         GenericSimilarity.load_associations(
             self,
-            group='mouse',
+            group=self.input_object['parameters']['taxon'],
             ont='go',
         )
 
@@ -83,12 +83,13 @@ class FunctionalSimilarity(GenericSimilarity):
             })
 
 
-    def compute_similarity(self, group):
+    def compute_similarity(self):
+        group = self.input_object['parameters']['taxon']
         lower_bound = float(self.input_object['parameters']['threshold'])
         results = self.compute_jaccard(self.gene_set, lower_bound)
         for result in results:
             if group == 'human':
-                result['sim_hit_curie'] = self.symbol2hgnc(result['sim_hit_name'])
+                result['hit_curie'] = self.symbol2hgnc(result['hit_name'])
             for ic in self.gene_set:
                 if ic['sim_input_curie'] == result['input_curie']:
                     result['input_curie'] = ic['gene_curie']
