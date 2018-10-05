@@ -5,6 +5,7 @@ from Modules.generic_similarity import GenericSimilarity
 from typing import List, Union, TextIO
 from pprint import pprint
 
+
 class PhenotypeSimilarity(GenericSimilarity):
     """
     Input: a list of human genes, a taxon to compute phenotypic similarity across (curies)
@@ -18,7 +19,8 @@ class PhenotypeSimilarity(GenericSimilarity):
         'rat': '10116',
         'zebrafish': '7955',
         'fly': '7227',
-        'worm': '6239'
+        'worm': '6239',
+        'human': '9606',
     }
 
     def __init__(self, **args) -> None:
@@ -53,7 +55,7 @@ class PhenotypeSimilarity(GenericSimilarity):
         Load a gene set and taxon
         """
         self.gene_set = self.input_object['input']
-        self.taxon = self.input_object['parameters']['taxon']
+        self.taxon = self.taxon_map[self.input_object['parameters']['taxon']]
 
     def load_associations(self,
                           ontology_name:str=None,
@@ -72,7 +74,8 @@ class PhenotypeSimilarity(GenericSimilarity):
         self.gene2phenotype_associations = {
             gene: PhenotypeSimilarity.ids_as_list(self.b.gene2phenotypes(gene)) for gene in self.gene_set}
 
-    def similarity_search(self):
+
+    def compute_similarity(self, sim_type):
         """
         Perform similarity search and calculate score
         """
@@ -84,6 +87,10 @@ class PhenotypeSimilarity(GenericSimilarity):
         merged = pd.merge(self.results[0], self.results[1], on='id', how='outer')
         merged['summed_score'] = merged.score_x + merged.score_y
         merged = merged[merged['summed_score'] > self.input_object['parameters']['threshold']]
+        if sim_type == 'gene':
+            merged = merged[~merged['id'].str.contains('MONDO')]
+        if sim_type == 'disease':
+            merged = merged[merged['id'].str.contains('MONDO')]
         return merged[['input_id_x', 'id', 'label_x', 'summed_score']]
 
     def explain_phenotypically_similar_gene(self, gene_curie):
