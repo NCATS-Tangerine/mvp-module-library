@@ -4,7 +4,7 @@ dev-install:
 install:
 	python setup.py install
 
-release:
+publish:
 	pip install twine
 	rm -rf dist/
 	rm -rf build/
