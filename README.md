@@ -1,11 +1,23 @@
-# mvp-module-library
-A collection of modules for executing MVP Workflows
+# NCATS Translator mvp-module-library
+
+The National Center for Advancing Translational Sciences (NCATS) is funding a 
+[project called "Translator"](https://ncats.nih.gov/translator/projects) 
+to develop cyberinfrastructure for biomedical knowledge integration.
+
+One key objective is to develop a platform for specifying and running computational workflows connecting diverse 
+biomedical data types (diseases, genes, drugs) with one another, to identify novel therapeutic 
+options for the treatment of various medical conditions. Contributing to this goal is a set of bioinformatics modules 
+which serve as building blocks for such workflows. Some of these modules are aggregated and published in this package,
+for reuse in the project's _"minimal viable product"_ application(s).
 
 ### Installation
 
-This package is published on PyPI (https://pypi.org/project/mvp-module-library/) and can be installed using pip: `pip install mvp-module-library`
+This package is published on PyPI (https://pypi.org/project/mvp-module-library/) and can be installed using pip: 
+```
+pip install mvp-module-library
+```
 
-As always, it's useful to have a separate virtual environment for your project:
+As always, it's useful to have a separate Python virtual environment for your project:
 
 ```
 virtualenv -p python3.6 venv
@@ -72,7 +84,3 @@ pip install mvp-module-library
  'types': None,
  'xrefs': None}
 ```
-
-### Publishing to PyPI
-
-The `publish` command in the [Makefile](Makefile) will prompt for a username and password, and then publish this package to PyPI. Make sure to increment the version number in [setup.py](setup.py) before publishing a new version.
