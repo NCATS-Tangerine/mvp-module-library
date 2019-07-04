@@ -2,8 +2,8 @@ import requests
 
 
 class BioLinkWrapper(object):
-    def __init__(self):
-        self.endpoint = 'https://api.monarchinitiative.org/api/'
+    def __init__(self, endpoint='https://api.monarchinitiative.org/api/'):
+        self.endpoint = endpoint
         self.params = {
             'fetch_objects': 'true',
         }
