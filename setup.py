@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     url='https://github.com/NCATS-Tangerine/mvp-module-library',
     install_requires=requires,
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     description='A collection of modules for executing MVP Workflows',
     long_description=long_description,
     long_description_content_type="text/markdown"
