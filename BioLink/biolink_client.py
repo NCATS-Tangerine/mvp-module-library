@@ -6,6 +6,7 @@ class BioLinkWrapper(object):
         self.endpoint = endpoint
         self.params = {
             'fetch_objects': 'true',
+            'rows': -1
         }
 
     def get_obj(self, obj_id):
