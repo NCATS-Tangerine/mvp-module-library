@@ -4,26 +4,28 @@ import requests
 class BioLinkWrapper(object):
     def __init__(self, endpoint='https://api.monarchinitiative.org/api/'):
         self.endpoint = endpoint
-        self.params = {
-            'fetch_objects': 'true',
-            'rows': -1
-        }
+
+    def add_default_params(self, params):
+        if 'rows' not in params:
+            params['rows'] = -1
+        if 'fetch_objects' not in params:
+            params['fetch_objects'] = True
+        return params
 
     def get_obj(self, obj_id):
         url = '{0}bioentity/{1}'.format(self.endpoint, obj_id)
         response = requests.get(url)
         return response.json()
 
-    def disease2genes(self, disease_curie):
-        params = {}
-        params.update(self.params)
+    def disease2genes(self, disease_curie, **params):
         url = '{0}bioentity/disease/{1}/genes'.format(self.endpoint, disease_curie)
+        self.add_default_params(params)
         response = requests.get(url, params)
         return response.json()
 
-    def disease2phenotypes(self, disease_curie):
-        params = {}
+    def disease2phenotypes(self, disease_curie, **params):
         url = '{0}bioentity/disease/{1}/phenotypes'.format(self.endpoint, disease_curie)
+        self.add_default_params(params)
         response = requests.get(url, params)
         return response.json()
 
@@ -33,7 +35,7 @@ class BioLinkWrapper(object):
         response = requests.get(url, params)
         return response.json()
 
-    def gene2orthologs(self, gene_curie, orth_taxon_name=None):
+    def gene2orthologs(self, gene_curie, orth_taxon_name=None, **params):
         taxon_map = {
             'human': 'NCBITaxon:9606',
             'mouse': 'NCBITaxon:10090',
@@ -42,89 +44,94 @@ class BioLinkWrapper(object):
             'fly': 'NCBITaxon:7227',
             'worm': 'NCBITaxon:6239'
         }
-        params = {}
         if orth_taxon_name:
             params['homolog_taxon'] = taxon_map[orth_taxon_name]
+        self.add_default_params(params)
         url = '{}bioentity/gene/{}/homologs'.format(self.endpoint, gene_curie)
         response = requests.get(url, params)
         return response.json()
 
-    def phenotype2genes(self, phenotype_curie):
+    def phenotype2genes(self, phenotype_curie, **params):
         url = '{}bioentity/phenotype/{}/genes'.format(self.endpoint, phenotype_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def gene2phenotypes(self, gene_curie):
+    def gene2phenotypes(self, gene_curie, **params):
         url = '{}bioentity/gene/{}/phenotypes'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def gene2diseases(self, gene_curie):
+    def gene2diseases(self, gene_curie, **params):
         url = '{}bioentity/gene/{}/diseases'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def gene_interactions(self, gene_curie):
+    def gene_interactions(self, gene_curie, **params):
         url = '{}bioentity/gene/{}/interactions'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def gene2functions(self, gene_curie):
+    def gene2functions(self, gene_curie, **params):
         url = '{}bioentity/gene/{}/function'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def gene2tissue_expression(self, gene_curie):
+    def gene2tissue_expression(self, gene_curie, **params):
         url = '{}bioentity/gene/{}/expression/anatomy'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def tissue2gene_expression(self, tissue_curie):
-        url = '{}bioentity/anatomy/{}/genes'.format(self.endpoint, gene_curie)
-        response = requests.get(url)
+    def tissue2gene_expression(self, tissue_curie, **params):
+        url = '{}bioentity/anatomy/{}/genes'.format(self.endpoint, tissue_curie)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def disease_models(self, disease_curie):
+    def disease_models(self, disease_curie, **params):
         url = '{}/bioentity/disease/{}/models'.format(self.endpoint, disease_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def taxon2phenotypes(self, taxon_curie):
+    def taxon2phenotypes(self, taxon_curie, **params):
         # get phenotypes associated with taxid
         url = "mart/gene/phenotype/{}".format(self.endpoint, taxon_curie)
-        response = requests.get(url)
+        self.add_default_params(params)
+        response = requests.get(url, params)
         return response.json()
 
-    def parse_gene_functions(self, curie):
+    def parse_gene_functions(self, curie, **params):
         function_list = list()
-        functions = self.gene2functions(gene_curie=curie)
+        functions = self.gene2functions(gene_curie=curie, **params)
         if 'associations' in functions.keys():
             for assoc in functions['associations']:
                 function_list.append(assoc['object']['label'])
         function_set = set(function_list)
         return ", ".join(function_set)
 
-    def get_orthoglog_gene_set(self, gene_set, orth_taxon_name):
+    def get_orthoglog_gene_set(self, gene_set, orth_taxon_name, **params):
         orth_set = []
         for gene in gene_set:
-            orth_set.append(self.gene2orthologs(gene_curie=gene, orth_taxon_name=orth_taxon_name))
+            orth_set.append(self.gene2orthologs(gene_curie=gene, orth_taxon_name=orth_taxon_name, **params))
         return orth_set
 
-    def compute_jaccard(self, id1, id2, category):
+    def compute_jaccard(self, id1, id2, category, **params):
         url = "{0}/pair/sim/jaccard/{1}/{2}/".format(self.endpoint, id1, id2)
-        params ={
-            'object_category': category
-        }
-        params.update(self.params)
+        if 'object_category' not in params:
+            params['object_category'] = category
         response = requests.get(url, params)
         return response.json()
 
-    def compute_owlsim(self, id):
+    def compute_owlsim(self, id, **params):
         url = '{0}sim/search'.format(self.endpoint)
-        params = {
-            'id': id,
-        }
-        params.update(self.params)
+        if 'id' not in params:
+            params['id'] = params
         response = requests.get(url, params)
         return response.json()
 
