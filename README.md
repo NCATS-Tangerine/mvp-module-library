@@ -29,8 +29,8 @@ pip install mvp-module-library
 
 ```
 >>> from pprint import pprint
->>> from BioLink.biolink_client import BioLinkWrapper
->>> b = BioLinkWrapper()
+>>> from biolink_api.biolink_client import BioLinkApiWrapper
+>>> b = BioLinkApiWrapper()
 >>> pprint(b.get_obj('MONDO:0005148'))
 {'association_counts': None,
  'categories': ['disease'],
