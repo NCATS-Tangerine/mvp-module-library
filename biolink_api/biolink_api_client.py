@@ -1,7 +1,7 @@
 import requests
 
 
-class BioLinkWrapper(object):
+class BioLinkApiWrapper(object):
     def __init__(self, endpoint='https://api.monarchinitiative.org/api/'):
         self.endpoint = endpoint
 
@@ -153,7 +153,7 @@ class BioLinkWrapper(object):
             'input_symbol': input_label,
             'hit_id': hit_id,
             'hit_symbol': hit_label,
-            'sources': BioLinkWrapper.parse_sources(association['provided_by']),
+            'sources': BioLinkApiWrapper.parse_sources(association['provided_by']),
             'relation': relation_label
         }
         return parsed_association
